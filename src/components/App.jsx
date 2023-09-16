@@ -12,17 +12,22 @@ export class App extends Component {
   state = {
     contacts: [],
     filter: '',
+    isInitializedTemplate: false,
   };
 
   componentDidMount() {
     if (CONTACTS && CONTACTS.length > 0) {
       this.setState({
+        isInitializedTemplate: true,
         contacts: CONTACTS,
       });
     } else {
-      this.setState({
-        contacts: contactsTemplate,
-      });
+      setTimeout(() => {
+        this.setState({
+          isInitializedTemplate: true,
+          contacts: contactsTemplate,
+        });
+      }, 4000);
     }
   }
 
@@ -83,10 +88,24 @@ export class App extends Component {
           onChange={this.handlerInputFilter}
           filterValue={this.state.filter}
         />
-        <ContactList
-          contacts={filterContacts}
-          onButtonDelete={this.handlerButtonDelete}
-        />
+
+        {this.state.isInitializedTemplate ? (
+          <ContactList
+            contacts={filterContacts}
+            onButtonDelete={this.handlerButtonDelete}
+          />
+        ) : (
+          <>
+            <p>
+              You don't have any saved contacts, templates for contacts will be
+              loaded...
+            </p>
+            <p>
+              Ви не маєте збережених контактів, будуть завантажені шаблони
+              контактів...
+            </p>
+          </>
+        )}
       </div>
     );
   }
