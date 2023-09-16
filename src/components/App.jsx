@@ -1,29 +1,46 @@
 import React, { Component } from 'react';
 import { nanoid } from 'nanoid';
+import contactsTemplate from '../data/contactsTemplate.json';
 import Filter from './Filter/Filter';
 import ContactList from './ContactList/ContactList';
 import ContactForm from './ContactForm/ContactForm';
 import MainTitle from './MainTitle/MainTitle';
 
+const CONTACTS = JSON.parse(localStorage.getItem('CONTACTS'));
+
 export class App extends Component {
   state = {
-    contacts: [
-      { id: 'id-1', name: 'Rosie Simpson', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione Kline', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden Clements', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie Copeland', number: '227-91-26' },
-    ],
+    contacts: [],
     filter: '',
   };
+
+  componentDidMount() {
+    if (CONTACTS && CONTACTS.length > 0) {
+      this.setState({
+        contacts: CONTACTS,
+      });
+    } else {
+      this.setState({
+        contacts: contactsTemplate,
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    if (prevState.contacts !== this.state.contacts) {
+      localStorage.setItem('CONTACTS', JSON.stringify(this.state.contacts));
+    }
+  }
 
   addNewContacts = (name, number) => {
     const showAlert = true;
     const similarElement = element => element.name === name;
     if (
-      // this.state.contacts.filter(contact => contact.name === name).length !== 0 // мій метод пошуку подібного ім'я через фільтер
+      // this.state.contacts.filter(contact => contact.name === name).length !== 0 // мій метод пошуку подібного ім'я через фільтр // не кращій варіант
       // this.state.contacts.some(contact => contact.name === name) // знайшов some, який перебирає масив і повертає true або false, не мутує вихідний масив
+      // this.state.contacts.some(similarElement)
 
-      this.state.contacts.some(similarElement)
+      this.state.contacts.find(similarElement)
     ) {
       alert(name + ' is already in contacts.');
       return showAlert;
@@ -56,6 +73,7 @@ export class App extends Component {
 
   render() {
     const filterContacts = this.filterContacts();
+
     return (
       <div className="container">
         <MainTitle title="Phonebook" />
